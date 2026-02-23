@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuestas - Humedales de Agua Dulce</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }       
+
+        .container-encuestas {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .encuesta-header {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+            margin-bottom: 0;
+        }
+
+        .encuesta-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .encuesta-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 30px;
+            border-radius: 0 0 10px 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: #f5f5f5;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn:hover {
+            background: #ececec;
+            color: #333;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .encuesta-contenido {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .encuesta-contenido.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .intro-text {
+            background: #f0f4ff;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 30px;
+            border-radius: 4px;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .pregunta {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .pregunta:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .num-pregunta {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .pregunta label {
+            display: block;
+            margin-bottom: 12px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .pregunta label:hover {
+            background: #f9f9f9;
+        }
+
+        .pregunta input[type="radio"],
+        .pregunta input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .pregunta input[type="text"],
+        .pregunta input[type="email"],
+        .pregunta textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+
+        .pregunta textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .pregunta input[type="text"]:focus,
+        .pregunta input[type="email"]:focus,
+        .pregunta textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .pregunta input[type="number"] {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .escala-numerica {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .escala-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .escala-item input[type="radio"] {
+            display: block;
+            margin: 0 auto 8px auto;
+        }
+
+        .escala-item label {
+            display: block;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .datos-header {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .datos-header h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .datos-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .datos-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .datos-item label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .datos-item input,
+        .datos-item select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .botones-accion {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-enviar {
+            background: #667eea;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-enviar:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-limpiar {
+            background: #f0f0f0;
+            color: #333;
+            flex: 1;
+        }
+
+        .btn-limpiar:hover {
+            background: #e0e0e0;
+        }
+
+        .volver-index {
+            display: flex;
+            justify-content: center;
+            margin-top: 0;
+            margin-bottom: 14px;
+        }
+
+        .btn-volver-index {
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 12px 30px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-volver-index:hover {
+            background: #e0e0e0;
+        }
+
+        .mensaje {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .mensaje.exito {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+            display: block;
+        }
+
+        .mensaje.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #f5c6cb;
+            display: block;
+        }
+
+        .instrucciones {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        @media (max-width: 600px) {
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                text-align: left;
+            }
+
+            .datos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .botones-accion {
+                flex-direction: column;
+            }
+
+            .encuesta-header h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-encuestas">
+        <div class="volver-index">
+            <button type="button" class="btn-volver-index" onclick="window.location.href='index.html'">← Volver al inicio</button>
+        </div>
+
+        <div class="encuesta-header">
+            <h1> Encuestas: Humedales de Agua Dulce</h1>
+            <p>Selecciona tu nivel educativo y responde las preguntas</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="cambiarTab('primaria')"> Primaria (6-12)</button>
+            <button class="tab-btn" onclick="cambiarTab('secundaria')"> Secundaria (13-17)</button>
+            <button class="tab-btn" onclick="cambiarTab('universidad')"> Universidad</button>
+        </div>
+
+        <!-- ENCUESTA PRIMARIA -->
+        <div id="primaria" class="encuesta-contenido active">
+            <form id="formPrimaria">
+                <div class="intro-text">
+                    <strong>Introducción:</strong> Leímos el texto sobre humedales de agua dulce, Ahora queremos saber qué aprendiste y qué te gustó, Responde con sinceridad, no hay respuestas correctas o incorrectas. ¡Gracias por participar!
+                </div>
+
+                <div class="datos-header">
+                    <h3>Sobre ti</h3>
+                    <div class="datos-grid">
+                        <div class="datos-item">
+                            <label>Edad:</label>
+                            <input type="number" name="edad_p" min="6" max="12">
+                        </div>
+                        <div class="datos-item">
+                            <label>Grado:</label>
+                            <input type="text" name="curso_p" placeholder="Ej: 4to de primaria">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">1. ¿Qué son los humedales?</div>
+                    <label><input type="radio" name="p1_primaria" value="a"> Zonas con agua y plantas especiales</label>
+                    <label><input type="radio" name="p1_primaria" value="b"> Montañas sin agua</label>
+                    <label><input type="radio" name="p1_primaria" value="c"> Desiertos</label>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">2. ¿Los humedales ocupan mucho terreno?</div>
+                    <label><input type="radio" name="p2_primaria" value="a"> Sí, la mayor parte de la Tierra</label>
+                    <label><input type="radio" name="p2_primaria" value="b"> No, menos del 6% (respuesta correcta)</label>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">3. Marca lo que viste sobre los humedales:</div>
+                    <label><input type="checkbox" name="p3_primaria" value="plantas"> Plantas adaptadas</label>
+                    <label><input type="checkbox" name="p3_primaria" value="animales"> Animales que nacen ahí</label>
+                    <label><input type="checkbox" name="p3_primaria" value="carbono"> Almacenamiento de carbono</label>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">4. ¿Qué servicio dan los humedales?</div>
+                    <label><input type="radio" name="p4_primaria" value="a"> Purifican agua</label>
+                    <label><input type="radio" name="p4_primaria" value="b"> Producen electricidad</label>
+                    <label><input type="radio" name="p4_primaria" value="c"> Nada</label>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">5. Escribe en una frase lo que más te gustó sobre los humedales:</div>
+                    <textarea name="p5_primaria" placeholder="Escribe aquí..."></textarea>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">6. ¿Harías algo en casa por lo que aprendiste?</div>
+                    <label><input type="radio" name="p6_primaria" value="si"> Sí</label>
+                    <label><input type="radio" name="p6_primaria" value="no"> No</label>
+                    <input type="text" name="p6_detalles_primaria" placeholder="Si respondiste sí, ¿qué harías?" style="margin-top: 10px;">
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">7. ¿Te gustaría aprender más sobre humedales?</div>
+                    <label><input type="radio" name="p7_primaria" value="si"> Sí</label>
+                    <label><input type="radio" name="p7_primaria" value="no"> No</label>
+                </div>
+
+                <div class="botones-accion">
+                    <button type="submit" class="btn btn-enviar"> Enviar respuestas</button>
+                    <button type="reset" class="btn btn-limpiar"> Limpiar formulario</button>
+                </div>
+
+                <div class="mensaje"></div>
+                <div class="instrucciones">
+                    Gracias por responder. Tus respuestas nos ayudan a mejorar la educación ambiental.
+                </div>
+            </form>
+        </div>
+
+        <!-- ENCUESTA SECUNDARIA -->
+        <div id="secundaria" class="encuesta-contenido">
+            <form id="formSecundaria">
+                <div class="intro-text">
+                    <strong>Introducción:</strong> Evalua tu conocimiento sobre los humedales de agua dulce, Responde con sinceridad. ¡Gracias por participar!
+                </div>
+
+                <div class="datos-header">
+                    <h3>Sobre ti (opcional)</h3>
+                    <div class="datos-grid">
+                        <div class="datos-item">
+                            <label>Edad:</label>
+                            <input type="number" name="edad_s" min="13" max="17">
+                        </div>
+                        <div class="datos-item">
+                            <label>Curso:</label>
+                            <input type="text" name="curso_s" placeholder="Ej: 3ro de secundaria">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">1. Resume en una frase la idea principal sobre los humedales:</div>
+                    <textarea name="p1_secundaria" placeholder="Escribe tu respuesta..."></textarea>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">2. Selecciona la afirmación correcta:</div>
+                    <label><input type="radio" name="p2_secundaria" value="a"> a) Los humedales almacenan menos carbono que los bosques</label>
+                    <label><input type="radio" name="p2_secundaria" value="b"> b) Desde 1700 se ha perdido aproximadamente 87% de humedales</label>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">3. ¿Cuál es la tasa de pérdida anual indicada sobre los humedales?</div>
+                    <label><input type="radio" name="p3_secundaria" value="a"> 3,500 km²</label>
+                    <label><input type="radio" name="p3_secundaria" value="b"> 35,000 km²</label>
+                    <label><input type="radio" name="p3_secundaria" value="c"> 350,000 km²</label>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">4. Identifica 3 amenazas principales mencionadas en el texto:</div>
+                    <textarea name="p4_secundaria" placeholder="Escribe las tres amenazas..."></textarea>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">5. ¿Qué servicios económicos aportan los humedales? (menciona 2):</div>
+                    <textarea name="p5_secundaria" placeholder="Escribe dos servicios..."></textarea>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">6. Propón una medida escolar para proteger un humedal local (actividad concreta):</div>
+                    <textarea name="p6_secundaria" placeholder="Describe la medida..."></textarea>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">7. Valora los siguientes aspectos (1 = malo, 5 = excelente):</div>
+                    <div style="margin-top: 15px;">
+                        <p style="margin-bottom: 15px; color: #666; font-size: 14px;"><strong>Claridad del contenido de los humedales de agua dulce:</strong></p>
+                        <div class="escala-numerica">
+                            <div class="escala-item"><input type="radio" name="p7_claridad_s" value="1"> <label>1</label></div>
+                            <div class="escala-item"><input type="radio" name="p7_claridad_s" value="2"> <label>2</label></div>
+                            <div class="escala-item"><input type="radio" name="p7_claridad_s" value="3"> <label>3</label></div>
+                            <div class="escala-item"><input type="radio" name="p7_claridad_s" value="4"> <label>4</label></div>
+                            <div class="escala-item"><input type="radio" name="p7_claridad_s" value="5"> <label>5</label></div>
+                        </div>
+                        <p style="margin-top: 20px; margin-bottom: 15px; color: #666; font-size: 14px;"><strong> Este tema seria de utilidad para tu comunidad:</strong></p>
+                        <div class="escala-numerica">
+                            <div class="escala-item"><input type="radio" name="p7_utilidad_s" value="1"> <label>1</label></div>
+                            <div class="escala-item"><input type="radio" name="p7_utilidad_s" value="2"> <label>2</label></div>
+                            <div class="escala-item"><input type="radio" name="p7_utilidad_s" value="3"> <label>3</label></div>
+                            <div class="escala-item"><input type="radio" name="p7_utilidad_s" value="4"> <label>4</label></div>
+                            <div class="escala-item"><input type="radio" name="p7_utilidad_s" value="5"> <label>5</label></div>
+                        </div>
+                        <p style="margin-top: 20px; margin-bottom: 15px; color: #666; font-size: 14px;"><strong>Interés personal sobre el tema de humedales:</strong></p>
+                        <div class="escala-numerica">
+                            <div class="escala-item"><input type="radio" name="p7_interes_s" value="1"> <label>1</label></div>
+                            <div class="escala-item"><input type="radio" name="p7_interes_s" value="2"> <label>2</label></div>
+                            <div class="escala-item"><input type="radio" name="p7_interes_s" value="3"> <label>3</label></div>
+                            <div class="escala-item"><input type="radio" name="p7_interes_s" value="4"> <label>4</label></div>
+                            <div class="escala-item"><input type="radio" name="p7_interes_s" value="5"> <label>5</label></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">8. Comentario libre / sugerencias para ampliar el tema:</div>
+                    <textarea name="p8_secundaria" placeholder="Escribe tu comentario..."></textarea>
+                </div>
+
+                <div class="botones-accion">
+                    <button type="submit" class="btn btn-enviar"> Enviar respuestas</button>
+                    <button type="reset" class="btn btn-limpiar"> Limpiar formulario</button>
+                </div>
+
+                <div class="mensaje"></div>
+                <div class="instrucciones">
+                    Gracias por tu tiempo. Tus respuestas son valiosas para mejorar el material educativo.
+                </div>
+            </form>
+        </div>
+
+        <!-- ENCUESTA UNIVERSIDAD -->
+        <div id="universidad" class="encuesta-contenido">
+            <form id="formUniversidad">
+                <div class="intro-text">
+                    <strong>Introducción:</strong> Responde esta encuesta sobre humedales de agua dulce, Tiempo estimado: 8–12 min.¡Gracias por participar!
+                </div>
+
+                <div class="datos-header">
+                    <h3>Datos académicos</h3>
+                    <div class="datos-grid">
+                        <div class="datos-item">
+                            <label>Facultad/Programa:</label>
+                            <input type="text" name="facultad_u" placeholder="Ej: Biología, Ingeniería Ambiental">
+                        </div>
+                        <div class="datos-item">
+                            <label>Año/Semestre:</label>
+                            <input type="text" name="anio_u" placeholder="Ej: 2do año">
+                        </div>
+                        <div class="datos-item">
+                            <label>Rol:</label>
+                            <select name="rol_u">
+                                <option value="">Selecciona...</option>
+                                <option value="estudiante">Estudiante</option>
+                                <option value="profesor">Profesor/a</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">1. Resume en 1–2 líneas los argumentos centrales y la evidencia presentada:</div>
+                    <textarea name="p1_universidad" placeholder="Escribe tu resumen..."></textarea>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">2. Señala dos cifras clave sobre los humedales y explica su relevancia:</div>
+                    <textarea name="p2_universidad" placeholder="Explica su importancia."></textarea>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">3. Evalúa la solidez de las fuentes y la actualización bibliográfica (2010–2025):</div>
+                    <label><input type="radio" name="p3_universidad" value="a"> Excelente</label>
+                    <label><input type="radio" name="p3_universidad" value="b"> Adecuada</label>
+                    <label><input type="radio" name="p3_universidad" value="c"> Insuficiente</label>
+                    <textarea name="p3_comentario_u" placeholder="Comentario adicional..." style="margin-top: 10px;"></textarea>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">4. Identifica al menos 3 limitaciones o vacíos en los humedales (metodología, alcance, sesgos):</div>
+                    <textarea name="p4_universidad" placeholder="Escribe las limitaciones identificadas..."></textarea>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">5. Propón una hipótesis de investigación derivada del capítulo "Amenazas" o "Protección":</div>
+                    <textarea name="p5_universidad" placeholder="Escribe tu hipótesis..."></textarea>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">6. Diseña brevemente un indicador de monitoreo para restauración de humedales (qué medir, frecuencia, umbral):</div>
+                    <textarea name="p6_universidad" placeholder="Describe el indicador..."></textarea>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">7. Propón 2 medidas concretas de gestión a escala de cuenca basadas en el texto:</div>
+                    <textarea name="p7_universidad" placeholder="Escribe las dos medidas..."></textarea>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">8. ¿Crees que la valoración económica (US$15,000–72,000/ha/año) está bien justificada?</div>
+                    <label><input type="radio" name="p8_universidad" value="si"> Sí</label>
+                    <label><input type="radio" name="p8_universidad" value="parcial"> Parcialmente</label>
+                    <label><input type="radio" name="p8_universidad" value="no"> No</label>
+                    <textarea name="p8_explicacion_u" placeholder="Explica tu respuesta..." style="margin-top: 10px;"></textarea>
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">9. ¿Te interesa colaborar en un proyecto aplicado (investigación, extensión)?</div>
+                    <label><input type="radio" name="p9_universidad" value="si"> Sí</label>
+                    <label><input type="radio" name="p9_universidad" value="no"> No</label>
+                    <input type="email" name="p9_email_u" placeholder="Si respondiste sí, deja tu correo" style="margin-top: 10px;">
+                </div>
+
+                <div class="pregunta">
+                    <div class="num-pregunta">10. Comentario final y referencias locales que recomendarías añadir:</div>
+                    <textarea name="p10_universidad" placeholder="Escribe tu comentario y referencias..."></textarea>
+                </div>
+
+                <div class="botones-accion">
+                    <button type="submit" class="btn btn-enviar"> Enviar respuestas</button>
+                    <button type="reset" class="btn btn-limpiar"> Limpiar formulario</button>
+                </div>
+
+                <div class="mensaje"></div>
+                <div class="instrucciones">
+                    Agradecemos tu participación crítica. Tus aportaciones contribuyen a la evaluación y mejora del recurso educativo.
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        function cambiarTab(tab) {
+            // Ocultar todos los contenidos
+            const contenidos = document.querySelectorAll('.encuesta-contenido');
+            contenidos.forEach(c => c.classList.remove('active'));
+
+            // Desactivar todos los botones
+            const botones = document.querySelectorAll('.tab-btn');
+            botones.forEach(b => b.classList.remove('active'));
+
+            // Mostrar el contenido seleccionado
+            document.getElementById(tab).classList.add('active');
+
+            // Activar el botón correspondiente
+            event.target.classList.add('active');
+        }
+
+        // Manejar envíos de formularios
+        document.getElementById('formPrimaria').addEventListener('submit', function(e) {
+            e.preventDefault();
+            enviarEncuesta('primaria', this);
+        });
+
+        document.getElementById('formSecundaria').addEventListener('submit', function(e) {
+            e.preventDefault();
+            enviarEncuesta('secundaria', this);
+        });
+
+        document.getElementById('formUniversidad').addEventListener('submit', function(e) {
+            e.preventDefault();
+            enviarEncuesta('universidad', this);
+        });
+
+        function enviarEncuesta(nivel, formulario) {
+            const formData = new FormData(formulario);
+            const datos = {};
+
+            // Convertir FormData a objeto
+            for (let [key, value] of formData.entries()) {
+                if (datos[key]) {
+                    // Si ya existe, convertir a array
+                    if (Array.isArray(datos[key])) {
+                        datos[key].push(value);
+                    } else {
+                        datos[key] = [datos[key], value];
+                    }
+                } else {
+                    datos[key] = value;
+                }
+            }
+
+            // Guardar en localStorage
+            const timestamp = new Date().toLocaleString('es-ES');
+            const encuestaCompleta = {
+                nivel: nivel,
+                fecha: timestamp,
+                datos: datos
+            };
+
+            let encuestas = JSON.parse(localStorage.getItem('encuestas')) || [];
+            encuestas.push(encuestaCompleta);
+            localStorage.setItem('encuestas', JSON.stringify(encuestas));
+
+            // Mostrar mensaje de éxito
+            const mensaje = formulario.querySelector('.mensaje');
+            mensaje.textContent = `✅ ¡Encuesta ${nivel.toUpperCase()} respondida exitosamente! Gracias por participar.`;
+            mensaje.classList.add('exito');
+            mensaje.classList.remove('error');
+
+            // Desplazarse hacia el mensaje
+            mensaje.scrollIntoView({ behavior: 'smooth' });
+
+            // Limpiar después de 3 segundos
+            setTimeout(() => {
+                formulario.reset();
+                mensaje.classList.remove('exito');
+            }, 3000);
+        }
+
+        // Verificar si hay encuestas guardadas (solo para demostración)
+        window.addEventListener('load', function() {
+            const encuestas = JSON.parse(localStorage.getItem('encuestas')) || [];
+            console.log(`Total de encuestas respondidas: ${encuestas.length}`);
+            if (encuestas.length > 0) {
+                console.log('Últimas respuestas:', encuestas[encuestas.length - 1]);
+            }
+        });
+    </script>
+</body>
+</html>
